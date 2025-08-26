@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="upload.html" class="nav-link">Upload Journal</a>
+        </div>
+        <h1>Cognitive Restructuring</h1>
+        
+        <div class="form-container">
+            <!-- Step 1 -->
+            <div class="step" id="step1">
+                <div class="step-header" onclick="toggleStep(1)">
+                    <h2>Step 1: Situation & Thoughts</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="step-content" id="step1-content">
+                    <div class="form-group">
+                        <label for="situation-thoughts">Situation and Thoughts:</label>
+                        <textarea id="situation-thoughts" placeholder="Describe the situation that triggered your thoughts and what thoughts went through your mind..."></textarea>
+                    </div>
+                    <button class="next-btn" onclick="completeStep(1)">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step collapsed" id="step2">
+                <div class="step-header" onclick="toggleStep(2)">
+                    <h2>Step 2: Cognitive Distortions</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="step-content" id="step2-content">
+                    <div class="form-group">
+                        <label>Select the cognitive distortions that apply to your thoughts:</label>
+                        <div class="distortion-list" id="distortion-list">
+                            <!-- Distortions will be populated dynamically -->
+                            <div class="loading-distortions">Loading cognitive distortions...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>AI Assistant Detected Distortions:</label>
+                        <button class="analysis-btn" onclick="runCBTAnalysis(event, false)" id="analysis-btn">
+                            <span class="btn-text">Run AI</span>
+                            <span class="loading-spinner" id="loading-spinner" style="display: none;">
+                                <div class="spinner"></div>
+                                <span>Analyzing...</span>
+                            </span>
+                        </button>
+                        
+                        <div class="analysis-results" id="analysis-results" style="display: none;">
+                            <div class="ai-distortion-list" id="ai-distortion-list">
+                                <!-- Results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="next-btn" onclick="completeStep(2)">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+             <div class="step collapsed" id="step3">
+                 <div class="step-header" onclick="toggleStep(3)">
+                     <h2>Step 3: Challenge the Distortions</h2>
+                     <span class="toggle-icon">▼</span>
+                 </div>
+                 <div class="step-content" id="step3-content">
+                     <div class="form-group">
+                         <label>Challenge each cognitive distortion with these questions:</label>
+                         <div class="challenge-list" id="challenge-list">
+                             <!-- Challenge questions will be populated here -->
+                         </div>
+                     </div>
+                     <button class="next-btn" onclick="completeStep(3)">Next Step</button>
+                 </div>
+             </div>
+             
+             <!-- Step 4 -->
+             <div class="step collapsed" id="step4">
+                 <div class="step-header" onclick="toggleStep(4)">
+                     <h2>Step 4: Distortions in Context</h2>
+                     <span class="toggle-icon">▼</span>
+                 </div>
+                 <div class="step-content" id="step4-content">
+                     <div class="form-group">
+                         <label>Insights into cognitive distortion patterns based on similar past journal entries:</label>
+                         <button class="analysis-btn" onclick="runCBTAnalysis(event, true)" id="analysis-context-btn">
+                            <span class="btn-text">Run AI</span>
+                            <span class="loading-spinner" id="loading-spinner-context" style="display: none;">
+                                <div class="spinner"></div>
+                                <span>Analyzing...</span>
+                            </span>
+                        </button>
+                         <div class="historical-distortions-list" id="historical-distortions-list">
+                             <!-- Historical distortions will be populated here -->
+                         </div>
+                     </div>
+                     <div class="form-group">
+                         <label for="common-themes">Common Themes:</label>
+                         <textarea id="common-themes" placeholder="Common themes and patterns identified..." readonly></textarea>
+                     </div>
+                     <div class="form-group">
+                        <label for="past-entries">The Relevant Journal Entries:</label>
+                        <textarea id="past-entries"  readonly></textarea>
+                    </div>
+                     <button class="submit-btn" onclick="submitForm()">Save</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+    <script src="config.js"></script>
+    <script src="index.js"></script>
+</body>
+</html> 

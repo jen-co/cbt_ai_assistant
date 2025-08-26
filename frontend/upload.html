@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Upload - CBT Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">CBT Analysis</a>
+        </div>
+        <h1>Journal Entry Upload</h1>
+        
+        <div class="form-container">
+            <!-- Upload Section -->
+            <div class="step" id="upload-step">
+                <div class="step-header">
+                    <h2>Step 1: Upload Journal Images</h2>
+                </div>
+                <div class="step-content">
+                    <div class="form-group">
+                        <label for="image-upload">Select Journal Images:</label>
+                        <input type="file" id="image-upload" multiple accept="image/*" class="file-input">
+                        <p class="help-text">You can select multiple images. Supported formats: JPG, PNG, JPEG</p>
+                    </div>
+                    
+                    <div class="uploaded-images" id="uploaded-images">
+                        <!-- Preview of uploaded images will be displayed here -->
+                    </div>
+                    
+                    <button class="next-btn" onclick="processImages()" id="process-btn" disabled>
+                        <span class="btn-text">Process Images with OCR</span>
+                        <span class="loading-spinner" id="ocr-loading-spinner" style="display: none;">
+                            <div class="spinner"></div>
+                            <span>Processing...</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OCR Results Section -->
+            <div class="step collapsed" id="results-step">
+                <div class="step-header" onclick="toggleStep('results')">
+                    <h2>Step 2: OCR Results</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="form-group">
+                        <label for="ocr-text">Extracted Text:</label>
+                        <textarea id="ocr-text" placeholder="OCR results will appear here..." rows="15" readonly></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="secondary-btn" onclick="editText()">Edit Text</button>
+                        <button class="primary-btn" onclick="saveToDatabase()" id="save-btn">
+                            <span class="btn-text">Save to Database</span>
+                            <span class="loading-spinner" id="save-loading-spinner" style="display: none;">
+                                <div class="spinner"></div>
+                                <span>Saving...</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="success-message" style="display: none;">
+                <h3>Success!</h3>
+                <p>Your journal entry has been successfully saved to the database.</p>
+                <button class="secondary-btn" onclick="resetForm()">Upload Another Entry</button>
+                <a href="index.html" class="primary-btn">Go to CBT Analysis</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="upload.js"></script>
+</body>
+</html>

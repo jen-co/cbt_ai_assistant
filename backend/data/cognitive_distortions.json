@@ -1,0 +1,97 @@
+{
+  "cognitive_distortions": [
+    {
+      "name": "CATASTROPHISING",
+      "description": "Jumping to the worst case scenario and believing the worst possible thing will happen",
+      "questions": [
+        "How likely is it that will happen?",
+        "What tools do I have to cope if it does?",
+        "Is it helpful to imagine the worst case scenario?",
+        "Have I imagined this before to find it doesn't actually happen?"
+      ]
+    },
+    {
+      "name": "SHOULDS AND MUSTS",
+      "description": "'Should and must' thinking places unrealistic expectations on ourselves and others. 'I should be able to do this' or 'I must do the laundry today' can lead to feeling frustrated and pressured.",
+      "questions": [
+        "Am I placing too much pressure on myself or others?",
+        "What would be more realistic?"
+      ]
+    },
+    {
+      "name": "ALL-OR-NOTHING",
+      "description": "Seeing things as black and white, without any grey area, such as seeing things as good or bad with nothing in between",
+      "questions": [
+        "Is it possible for there to be a spectrum. Instead of 0 and 10, whereabouts am I in between?"
+      ]
+    },
+    {
+      "name": "MIND-READING",
+      "description": "Assuming we know what other people are thinking. For example, if two people were whispering and looking in your direction, you might automatically assume they are saying something bad about you.",
+      "questions": [
+        "Is it ever possible to know what others are thinking?",
+        "Could I be making an assumption?"
+      ]
+    },
+    {
+      "name": "CRITICAL SELF",
+      "description": "Placing too much blame on yourself when things go wrong and believing you are responsible for things you may not be entirely responsible for.",
+      "questions": [
+        "Am I entirely to blame?",
+        "Is it helpful to be self-critical?",
+        "If I make a mistake is it more helpful to bully myself or to learn from the mistake and encourage ourselves to try another approach?",
+        "What would I say to a friend?"
+      ]
+    },
+    {
+      "name": "MENTAL FILTER",
+      "description": "Only seeing what fits with our perspective. Example - 'People do not like me' but only one person frowns at you and others smile. You only take in that negative evidence as it fits your theory.",
+      "questions": [
+        "Am I wearing \"gloomy specs\"?",
+        "Is there any other evidence to the contrary?",
+        "What would be a more realistic thought?"
+      ]
+    },
+    {
+      "name": "JUDGEMENTS",
+      "description": "Making evaluations or judgements about events, ourselves, others, or the world, rather than describing what we actually see and have evidence for.",
+      "questions": [
+        "I'm making an evaluation about the situation or person. It's how I make sense of the world, but that doesn't mean my judgements are always right or helpful. Is there another perspective?"
+      ]
+    },
+    {
+      "name": "EMOTIONAL REASONING",
+      "description": "This is a style of unhelpful thinking where you base your view of situations, yourself, or others, on the way you are feeling. E.g. 'I feel anxious, so I must be in danger'.",
+      "questions": [
+        "Is it ever possible to know what others are thinking?",
+        "Could I be making an assumption?"
+      ]
+    },
+    {
+      "name": "PREDICTION",
+      "description": "Believing we know whats going to happen in the future",
+      "questions": [
+        "Am I thinking that I can predict the future?",
+        "How likely is it that that might really happen?"
+      ]
+    },
+    {
+      "name": "MOUNTAINS AND MOLEHILLS",
+      "description": "Exaggerating the risk of danger, or the negatives. Minimising the odds of how things are most likely to turn out, or minimising positives.",
+      "questions": [
+        "Am I exaggerating the bad stuff?",
+        "How would someone else see it?",
+        "What's the bigger picture?"
+      ]
+    },
+    {
+      "name": "INTERNAL CONTROL",
+      "description": "Belieiving you should be in control of all situations and that outcomes are based on your effort alone.",
+      "questions": [
+        "Do I have control over the outcome?",
+        "Even if no onelse did anything, can what I do make a difference?",
+        "Even if I do have a certain amount of control in a situation, how much control or responsibility is it reasonable to expect?"
+      ]
+    }
+  ]
+}
