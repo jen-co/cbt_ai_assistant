@@ -1,5 +1,6 @@
 backend/data/journal_images
 backend/data/full_journal_text.txt
+backend/data/cr_entries.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

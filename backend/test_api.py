@@ -49,10 +49,95 @@ def test_analysis(question: str, use_context: bool):
         return False
 
 
+def test_get_cognitive_distortions():
+    """Test GET /cognitive-distortions"""
+    print("\nTesting GET /cognitive-distortions ...")
+    try:
+        resp = requests.get(f"{API_BASE_URL}/cognitive-distortions", timeout=15)
+        print(f"Status Code: {resp.status_code}")
+        if resp.status_code == 200:
+            data = resp.json()
+            print(f"Retrieved {len(data) if hasattr(data, '__len__') else 'data'} entries")
+            return True
+        else:
+            print(f"Request failed: {resp.text}")
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def test_process_images():
+    """Test POST /process-images (will fail if no images are present; that is acceptable for visibility)"""
+    print("\nTesting POST /process-images ...")
+    try:
+        resp = requests.post(f"{API_BASE_URL}/process-images", timeout=120)
+        print(f"Status Code: {resp.status_code}")
+        if resp.status_code == 200:
+            data = resp.json()
+            print(f"Processed text length: {data.get('text_length')}")
+            return True
+        else:
+            print(f"Request returned non-200 (expected if no images are present): {resp.text}")
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def test_save_text(sample_text: str):
+    """Test POST /save-text"""
+    print("\nTesting POST /save-text ...")
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/save-text",
+            json={"text": sample_text},
+            headers={"Content-Type": "application/json"},
+            timeout=30,
+        )
+        print(f"Status Code: {resp.status_code}")
+        if resp.status_code == 200:
+            data = resp.json()
+            print(f"Saved text length: {data.get('text_length')}")
+            return True
+        else:
+            print(f"Request failed: {resp.text}")
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def test_save_entry(sample_entry: dict):
+    """Test POST /save-entry"""
+    print("\nTesting POST /save-entry ...")
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/save-entry",
+            json=sample_entry,
+            headers={"Content-Type": "application/json"},
+            timeout=30,
+        )
+        print(f"Status Code: {resp.status_code}")
+        if resp.status_code == 200:
+            data = resp.json()
+            print(f"Entry saved successfully. Total entries: {data.get('entry_count')}")
+            return True
+        else:
+            print(f"Request failed: {resp.text}")
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
 def main():
     """Main test function"""
     print("CBT Assistant API Test")
     print("=" * 50)
+
+    # Quick GET check
+    test_get_cognitive_distortions()
 
     # Test questions
     test_questions = [
@@ -70,6 +155,26 @@ def main():
         test_analysis(question, use_context=False)
         time.sleep(2)  # Small delay between requests
 
+    # Optional OCR/text flow samples (may fail if not set up; still useful for feedback)
+    test_process_images()
+    test_save_text("Sample extracted or edited text.")
+
+    # Test save entry (matches frontend schema)
+    sample_entry = {
+        "situationThoughts": "Work presentation: I'm worried I'll forget what to say.",
+        "cognitiveDistortions": ["Catastrophising", "Mind reading"],
+        "challengeAnswers": {
+            "Catastrophising": [
+                "It's unlikely everything will go wrong.",
+                "I have a plan and slides if I forget."
+            ],
+            "Mind reading": [
+                "I can't know what others think.",
+                "Focus on delivering clearly."
+            ]
+        }
+    }
+    test_save_entry(sample_entry)
 
     print(f"\n{'='*50}")
     print("Testing completed!")

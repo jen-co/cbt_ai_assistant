@@ -9,6 +9,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
 import logging
 import time
+import os
 
 from .models import CogDistortionAnalysis, CogDistortionComparison
 from pydantic import BaseModel
@@ -28,13 +29,19 @@ class CBTLLMService:
         self.retriever = None
         self.rag_chain = None  # RAG chain
         self.simple_chain = None  # Simple LLM chain
-        self._ensure_rag_ready()
         self._ensure_simple_ready()
+        # Only initialize RAG if journal file exists
+        if os.path.exists(self.config.FULL_JOURNAL_TEXT_PATH):
+            self._ensure_rag_ready()
+        else:
+            logger.warning(f"Journal text file not found at {self.config.FULL_JOURNAL_TEXT_PATH}. RAG functionality will not be available.")
     
+
     def _ensure_rag_ready(self):
         """Lazily initialize RAG components if not already initialized"""
         if self.rag_chain is not None and self.retriever is not None:
             return
+         
         try:
             self._load_documents()
             self._setup_vector_store()
@@ -172,6 +179,9 @@ class CBTLLMService:
             
         Returns:
             tuple: (CogDistortionAnalysis, str) - The analysis results and concatenated source document content
+            
+        Raises:
+            FileNotFoundError: When use_context=True but journal text file doesn't exist
         """
         try:
             logger.info(f"Analyzing question (use_context={use_context}): {question[:100]}...")
@@ -196,6 +206,12 @@ class CBTLLMService:
                 logger.info("Simple analysis completed successfully")
                 return analysis, ""
             else:
+                if not os.path.exists(self.config.FULL_JOURNAL_TEXT_PATH):
+                    raise FileNotFoundError(
+                        f"Cannot perform context-aware analysis: Journal text file not found at {self.config.FULL_JOURNAL_TEXT_PATH}. "
+                        "Please ensure the file exists or use use_context=False for analysis without context."
+                    )
+                    
                 self._ensure_rag_ready()
                 result = self.rag_chain.invoke(question)
                 end_time = time.time()

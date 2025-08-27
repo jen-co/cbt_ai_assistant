@@ -6,12 +6,35 @@ let cognitiveDistortionsData = null;
 
 let challengeQuestionsPopulated = false;
 
+// Simple dialog helpers using static HTML elements
+function showDialog(message) {
+    const overlay = document.getElementById('dialog-overlay');
+    const messageEl = document.getElementById('dialog-message');
+    if (!overlay || !messageEl) return;
+    messageEl.textContent = message;
+    overlay.style.display = 'flex';
+}
+
+function hideDialog() {
+    const overlay = document.getElementById('dialog-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     // Load cognitive distortions from backend
     loadCognitiveDistortions();
     // Initialize step states
     updateStepStates();
+
+    // Dialog event listeners
+    const overlay = document.getElementById('dialog-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) hideDialog();
+        });
+    }
+    
 });
 
 // Load cognitive distortions from backend API
@@ -104,7 +127,7 @@ function toggleStep(stepNumber) {
         if (allPreviousStepsCompleted) {
             step.classList.toggle('collapsed');
         } else {
-            alert('Please complete all previous steps before proceeding.');
+            showDialog('Please complete all previous steps before proceeding.');
         }
     } else {
         step.classList.toggle('collapsed');
@@ -162,11 +185,11 @@ function updateStepStates() {
 }
 
 // Submit the form
-function submitForm() {
+async function submitForm() {
     const situationThoughts = document.getElementById('situation-thoughts').value.trim();
     
     if (!situationThoughts) {
-        alert('Please complete Step 1 (Situation & Thoughts) before Saving.');
+        showDialog('Please complete Step 1 (Situation & Thoughts) before Saving.');
         return;
     }
     
@@ -177,14 +200,32 @@ function submitForm() {
         challengeAnswers: getChallengeAnswers()
     };
     
-    // Here you would typically send the data to your backend
-    console.log('Form submitted with data:', formData);
-    
-    // Show success message
-    showSuccessMessage();
-    
-    // Optionally reset the form
-    // resetForm();
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.SAVE_ENTRY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Failed to save entry (status ${response.status})`);
+        }
+        
+        const result = await response.json();
+        console.log('Entry saved:', result);
+        
+        // Show success message
+        showSuccessMessage();
+        
+        // Optionally reset the form
+        // resetForm();
+    } catch (error) {
+        console.error('Failed to save entry:', error);
+        showDialog('Failed to save entry: ' + error.message);
+    }
 }
 
 // Get challenge answers from Step 3
@@ -209,6 +250,7 @@ function getChallengeAnswers() {
 
 // Show success message
 function showSuccessMessage() {
+    showDialog('Entry Saved');
 }
 
 // Reset the form
@@ -269,7 +311,7 @@ async function runCBTAnalysis(event, useContext) {
     const situationThoughts = document.getElementById('situation-thoughts').value.trim();
     
     if (!situationThoughts) {
-        alert('Please complete Step 1 (Situation & Thoughts) before running the analysis.');
+        showDialog('Please complete Step 1 (Situation & Thoughts) before running the analysis.');
         return;
     }
     
@@ -301,7 +343,8 @@ async function runCBTAnalysis(event, useContext) {
         
     } catch (error) {
         console.error('Analysis failed:', error);
-        alert('Analysis failed. Please try again.');
+        //TODO add more user friendly error message
+        showDialog('Analysis failed: ' + error.message);
     } finally {
         // Reset button state
         analysisBtn.disabled = false;

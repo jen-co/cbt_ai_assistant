@@ -6,6 +6,7 @@ import sys
 import json
 import os
 from pathlib import Path
+from datetime import datetime
 parent_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(parent_dir))
 
@@ -242,6 +243,116 @@ def create_app(config: Config = None) -> Flask:
             logger.error(traceback.format_exc())
             return jsonify(ErrorResponse(
                 message=f"Text save failed: {str(e)}"
+            ).model_dump()), 500
+
+    @app.route('/save-entry', methods=['POST'])
+    def save_entry():
+        """Save frontend form submission as JSON object to cr_entries.json with timestamp"""
+        try:
+            # Validate request
+            if not request.is_json:
+                return jsonify(ErrorResponse(
+                    message="Content-Type must be application/json"
+                ).model_dump()), 400
+            
+            # Parse request
+            try:
+                payload = request.get_json()
+                if not isinstance(payload, dict):
+                    return jsonify(ErrorResponse(
+                        message="Request body must be a JSON object"
+                    ).model_dump()), 400
+            except Exception as e:
+                return jsonify(ErrorResponse(
+                    message=f"Invalid request format: {str(e)}"
+                ).model_dump()), 400
+            
+            # Map to expected frontend fields
+            situation_thoughts = payload.get('situationThoughts')
+            cognitive_distortions = payload.get('cognitiveDistortions', [])
+            challenge_answers = payload.get('challengeAnswers', {})
+            
+            # Validate required field
+            if not situation_thoughts or not str(situation_thoughts).strip():
+                return jsonify(ErrorResponse(
+                    message="Field 'situationThoughts' is required"
+                ).model_dump()), 400
+            
+            # Normalize optional fields
+            if not isinstance(cognitive_distortions, list):
+                cognitive_distortions = []
+            if not isinstance(challenge_answers, dict):
+                challenge_answers = {}
+            
+            entry = {
+                'situationThoughts': situation_thoughts,
+                'cognitiveDistortions': cognitive_distortions,
+                'challengeAnswers': challenge_answers,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # Define the path for cr_entries.json
+            entries_file_path = config.BASE_DIR / "data" / "cr_entries.json"
+            entries_file_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Load existing entries or create new list
+            entries = []
+            if entries_file_path.exists():
+                try:
+                    with open(entries_file_path, 'r', encoding='utf-8') as file:
+                        entries = json.load(file)
+                    if not isinstance(entries, list):
+                        entries = []
+                except (json.JSONDecodeError, IOError) as e:
+                    logger.warning(f"Could not read existing entries file: {str(e)}. Creating new file.")
+                    entries = []
+            
+            # Append new entry and save
+            entries.append(entry)
+            try:
+                with open(entries_file_path, 'w', encoding='utf-8') as file:
+                    json.dump(entries, file, indent=2, ensure_ascii=False)
+                
+                logger.info(f"Successfully saved entry to {entries_file_path}")
+            except IOError as e:
+                logger.error(f"Failed to write to entries file: {str(e)}")
+                return jsonify(ErrorResponse(
+                    message=f"Failed to save entry: {str(e)}"
+                ).model_dump()), 500
+            
+            # Also append situationThoughts to journal text file for future context analysis
+            try:
+                journal_text_path = config.FULL_JOURNAL_TEXT_PATH
+                journal_text_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Create the file if it doesn't exist
+                if not journal_text_path.exists():
+                    journal_text_path.touch()
+                    logger.info(f"Created new journal text file at {journal_text_path}")
+                
+                # Append the situation thoughts to the journal text file
+                with open(journal_text_path, 'a', encoding='utf-8') as file:
+                    file.write(f"\n\n--- Entry from {entry['timestamp']} ---\n")
+                    file.write(situation_thoughts)
+                    file.write("\n")
+                
+                logger.info(f"Successfully appended situation thoughts to {journal_text_path}")
+                
+            except IOError as e:
+                logger.warning(f"Failed to append to journal text file: {str(e)}")
+                # Don't fail the entire request if journal append fails, just log warning
+            
+            return jsonify({
+                "success": True,
+                "message": "Entry saved successfully",
+                "entry_count": len(entries)
+            }), 200
+            
+        except Exception as e:
+            logger.error(f"Entry save failed: {str(e)}")
+            logger.error(traceback.format_exc())
+            return jsonify(ErrorResponse(
+                message=f"Entry save failed: {str(e)}"
             ).model_dump()), 500
 
 

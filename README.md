@@ -148,6 +148,40 @@ GET /cognitive-distortions
 
 Returns the contents of `backend/data/cognitive_distortions.json`.
 
+- Save form submission entry (matches frontend schema)
+
+```http
+POST /save-entry
+Content-Type: application/json
+
+{
+  "situationThoughts": "Work presentation: I'm worried I'll forget what to say.",
+  "cognitiveDistortions": ["Catastrophising", "Mind reading"],
+  "challengeAnswers": {
+    "Catastrophising": [
+      "It's unlikely everything will go wrong.",
+      "I have a plan and slides if I forget."
+    ],
+    "Mind reading": [
+      "I can't know what others think.",
+      "Focus on delivering clearly."
+    ]
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Entry saved successfully",
+  "entry_count": 1
+}
+```
+
+The entry is saved to `backend/data/cr_entries.json` and automatically includes a server‑side `timestamp`. Additionally, the `situationThoughts` text is appended to `backend/data/full_journal_text.txt` for future context‑aware analysis.
+
 - Upload images for OCR (optional flow)
 
 ```http
@@ -181,7 +215,7 @@ Content-Type: application/json
 
 Notes:
 - `use_context` on `/analyse` controls whether previously saved/derived context is used when analyzing the provided question.
-
+- `/save-entry` enforces the frontend schema: `situationThoughts` (required), `cognitiveDistortions` (array), `challengeAnswers` (object) and adds `timestamp`.
 
 ### Testing the API
 
@@ -199,6 +233,9 @@ type nul > nul & curl -X POST http://localhost:5000/analyse -H "Content-Type: ap
 
 # Without context
 curl -X POST http://localhost:5000/analyse -H "Content-Type: application/json" -d "{\"question\": \"I am feeling very anxious about my upcoming presentation.\", \"use_context\": false}"
+
+# Save entry (frontend schema)
+curl -X POST http://localhost:5000/save-entry -H "Content-Type: application/json" -d "{\"situationThoughts\": \"Work presentation: I am worried I'll forget what to say.\", \"cognitiveDistortions\": [\"Catastrophising\", \"Mind reading\"], \"challengeAnswers\": {\"Catastrophising\": [\"It's unlikely everything will go wrong.\", \"I have a plan and slides if I forget.\"], \"Mind reading\": [\"I can't know what others think.\", \"Focus on delivering clearly.\"]}}"
 ```
 
 - Git Bash/WSL/Linux/macOS
@@ -219,6 +256,24 @@ curl -X POST http://localhost:5000/analyse \
     "question": "I am feeling very anxious about my upcoming presentation.",
     "use_context": false
   }'
+
+# Save entry (frontend schema)
+curl -X POST http://localhost:5000/save-entry \
+  -H "Content-Type: application/json" \
+  -d '{
+    "situationThoughts": "Work presentation: I'\''m worried I'\''ll forget what to say.",
+    "cognitiveDistortions": ["Catastrophising", "Mind reading"],
+    "challengeAnswers": {
+      "Catastrophising": [
+        "It'\''s unlikely everything will go wrong.",
+        "I have a plan and slides if I forget."
+      ],
+      "Mind reading": [
+        "I can'\''t know what others think.",
+        "Focus on delivering clearly."
+      ]
+    }
+  }'
 ```
 
 ## Frontend: Setup & Run
@@ -227,10 +282,10 @@ The frontend is a static site; no build step is required.
 
 1) Configure API base URL
 
-Set `API_BASE_URL` (or equivalent) in `front_end/config.js` to point to your backend, e.g.:
+Set `API_BASE_URL` (or equivalent) in `frontend/config.js` to point to your backend, e.g.:
 
 ```js
-// front_end/config.js
+// frontend/config.js
 const API_BASE_URL = "http://localhost:5000";
 ```
 
@@ -240,12 +295,12 @@ You can open the HTML files directly in a browser, or serve with a simple static
 
 ```bash
 # Option A: Using Python http.server (from project root)
-cd front_end
+cd frontend
 python -m http.server 8080
 # Visit http://localhost:8080
 
 # Option B: Using npx serve (Node required)
-# npx --yes serve front_end -l 8080
+# npx --yes serve frontend -l 8080
 ```
 
 3) Use the UI
@@ -256,6 +311,7 @@ python -m http.server 8080
 ## Data
 
 - `backend/data/cognitive_distortions.json` contains reference data for cognitive distortions used by the analysis pipeline.
+- `backend/data/cr_entries.json` stores form submissions with timestamps.
 - If uploads are used, the backend may create an uploads directory at runtime (see `file_storage_service.py`).
 
 ## Development Notes
@@ -275,7 +331,7 @@ python -m http.server 8080
 
 ## Troubleshooting
 
-- Backend won’t start: Ensure dependencies are installed and your Python venv is activated
+- Backend won't start: Ensure dependencies are installed and your Python venv is activated
 - Cannot connect to LLM: Start Ollama (or external provider) and verify model availability
 - CORS errors: Update `CORS_ORIGINS` or serve the frontend over `http://localhost`
 - File upload issues: Check that backend upload routes are enabled and writable paths are configured

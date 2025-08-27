@@ -10,7 +10,8 @@ const CONFIG = {
         OCR: '/ocr',
         UPLOAD_IMAGES: '/upload-images',
         PROCESS_IMAGES: '/process-images',
-        SAVE_TEXT: '/save-text'
+        SAVE_TEXT: '/save-text',
+        SAVE_ENTRY: '/save-entry'
     },
     
     // Application settings

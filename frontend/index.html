@@ -120,6 +120,16 @@
          </div>
      </div>
 
+    <!-- Simple dialog elements -->
+    <div id="dialog-overlay">
+        <div id="dialog">
+            <div id="dialog-message"></div>
+            <div class="dialog-actions">
+                <button class="close-btn" onclick="(function(){ const o=document.getElementById('dialog-overlay'); if(o) o.style.display='none'; })()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script src="config.js"></script>
     <script src="index.js"></script>
 </body>
