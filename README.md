@@ -2,6 +2,9 @@
 
 A Cognitive Behavioral Therapy assistant that analyzes user input for cognitive distortions and provides context‑aware guidance. The project includes a Python backend API and a lightweight JavaScript frontend.
 
+![Frontend Example](frontend_example.gif)
+
+
 ## Features
 
 - **Cognitive Distortion Analysis**: Identifies common cognitive distortions in user questions

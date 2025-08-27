@@ -146,7 +146,9 @@ class OCRService:
             
             for image_file in image_files:
                 extracted_text = self.process_single_image(image_file)
-                full_text += extracted_text
+                # Remove newlines from extracted text
+                cleaned_text = extracted_text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+                full_text += cleaned_text
             
             logger.info(f"Successfully processed {len(image_files)} images")
             return full_text
